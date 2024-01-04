@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Stopwatch</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    width: 100%;
+    height: 100vh;
+    background-image: url("../gradient.jpg");
+    background-position: center;
+    background-size: cover;
+    font-family: Arial, sans-serif; 
+    overflow-y: hidden;
+  }
+
+  html{
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    margin: 100px auto; 
+    padding: 2rem;
+    width: 80%; 
+    max-width: 615px; 
+    border-radius: 30px;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+  }
+
+  .lapTimes {
+    width: 100%; 
+    border-radius: 10px;
+    color: #000000;
+    font-size: 20px; 
+    text-align: center;
+  }
+
+  .lapTimes ol {
+    margin-top: 10px; 
+    list-style-type: none;
+    text-align: center;
+    padding: 2px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .time {
+    margin-top: 20px; 
+    padding: 2rem 0;
+    font-size: 4rem; 
+    color: #33d7d4;
+    text-align: center;
+  }
+
+  h1,
+  p {
+    color: #f8f8f8;
+  }
+
+  button {
+    padding: 15px;
+    font-size: 1.2rem; 
+    margin: 0 0.2rem;
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  button:hover {
+    color: rgb(124, 230, 230);
+  }
+
+  .options {
+    display: flex; 
+    flex-direction: row; 
+    gap: 25px; 
+  }
+
+  button:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      width: 90%; 
+    }
+
+    .lapTimes {
+      width: 90%; 
+    }
+  }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="time">
+      <span id="minutes">00</span>:<span id="seconds">00</span>:<span id="tens">00</span>
+    </p>
+
+    <div class="options">
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+      <button id="reset">Reset</button>
+      <button id="lap">Lap</button>
+  </div>
+  </div>
+
+  <div class="lapTimes">
+    <ol id="lapList"></ol>
+  </div>
+
+  <script>
+    window.onload = function () {
+      let minutes = 0;
+      let seconds = 0;
+      let tens = 0;
+      let lapCount = 1;
+      let laps = [];
+
+      let appendMinutes = document.querySelector('#minutes');
+      let appendTens = document.querySelector('#tens');
+      let appendSeconds = document.querySelector('#seconds');
+      let startBtn = document.querySelector('#start');
+      let stopBtn = document.querySelector('#stop');
+      let resetBtn = document.querySelector('#reset');
+      let lapBtn = document.querySelector('#lap');
+      let lapList = document.querySelector('#lapList');
+      let Interval;
+
+      const startTimer = () => {
+        tens++;
+        if (tens <= 9) {
+          appendTens.innerHTML = '0' + tens;
+        }
+        if (tens > 9) {
+          appendTens.innerHTML = tens;
+        }
+
+        if (tens > 99) {
+          seconds++;
+          appendSeconds.innerHTML = seconds <= 9 ? '0' + seconds : seconds;
+          tens = 0;
+          appendTens.innerHTML = '0' + 0;
+        }
+
+        if (seconds > 59) {
+          minutes++;
+          appendMinutes.innerHTML = minutes <= 9 ? '0' + minutes : minutes;
+          seconds = 0;
+          appendSeconds.innerHTML = '0' + 0;
+        }
+      };
+
+      startBtn.onclick = () => {
+        clearInterval(Interval);
+        Interval = setInterval(startTimer, 10);
+      };
+
+      stopBtn.onclick = () => {
+        clearInterval(Interval);
+      };
+
+      resetBtn.onclick = () => {
+        clearInterval(Interval);
+        tens = 0;
+        seconds = 0;
+        minutes = 0;
+        appendTens.innerHTML = '00';
+        appendSeconds.innerHTML = '00';
+        appendMinutes.innerHTML = '00';
+        laps = [];
+        lapCount = 1;
+        displayLaps();
+      };
+
+      const displayLaps = () => {
+        lapList.innerHTML = "";
+        laps.forEach((lap, index) => {
+          let lapItem = document.createElement("li");
+          lapItem.textContent = `${index + 1}.${lap}`;
+          lapList.appendChild(lapItem);
+        });
+      };
+
+      lapBtn.addEventListener("click", () => {
+        let lap = `${appendMinutes.textContent}:${appendSeconds.textContent}:${appendTens.textContent}`;
+        laps.unshift(lap);
+        if (laps.length > 5) {
+          laps.pop();
+        }
+        displayLaps();
+      });
+    };
+  </script>
+</body>
+</html>
